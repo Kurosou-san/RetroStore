@@ -1,0 +1,62 @@
+body {
+    background-color: #1e1e2f;
+    color: #f0f0f0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.register-container {
+    background-color: #2c2c3e;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 500px;
+}
+
+.form-control,
+.btn {
+    border-radius: 8px;
+}
+
+.btn-primary {
+    background-color: #f05454;
+    border-color: #f05454;
+}
+
+.btn-primary:hover {
+    background-color: #d94343;
+    border-color: #d94343;
+}
+
+.form-text a {
+    color: #aaa;
+    text-decoration: none;
+}
+
+.form-text a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #f0f0f0;
+}
+
+.position-relative input {
+    padding-right: 40px;
+}
+
+.password-toggle i {
+    color: #484848;
+}
