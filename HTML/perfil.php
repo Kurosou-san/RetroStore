@@ -93,8 +93,6 @@
             </div>
         </div>
 
-
-
         <!-- PIE DE PÁGINA -->
         <br> <?php include '../Layout/footer.php'; ?>
     </div>

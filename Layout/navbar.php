@@ -20,9 +20,9 @@
                             <i class="fa-solid fa-user-gear"></i> Administrar
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="adminDropdown">
-                            <li><a class="dropdown-item" href="./clientes.php"><i class="fa-solid fa-users"></i> Clientes</a></li>
-                            <li><a class="dropdown-item" href="./premios.php"><i class="fa-solid fa-gift"></i> Premios</a></li>
-                            <li><a class="dropdown-item" href="./beneficios.php"><i class="fa-solid fa-handshake"></i> Beneficios</a></li>
+                            <li><a class="dropdown-item" href="./adminClientes.php"><i class="fa-solid fa-users"></i> Clientes</a></li>
+                            <li><a class="dropdown-item" href="./adminPremios.php"><i class="fa-solid fa-gift"></i> Premios</a></li>
+                            <li><a class="dropdown-item" href="./adminBeneficios.php"><i class="fa-solid fa-handshake"></i> Beneficios</a></li>
                         </ul>
                     </li>
                 <?php endif; ?>
@@ -35,10 +35,10 @@
                         <a class="nav-link" href="../HTML/productos.php"><i class="fa-solid fa-box"></i> Catalogo</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="./ver_premios.php"><i class="fa-solid fa-gift"></i> Canjear</a>
+                        <a class="nav-link" href="./premiosCanjeables.php"><i class="fa-solid fa-gift"></i> Canjear</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="./beneficios_cliente.php"><i class="fa-solid fa-handshake"></i> Beneficios</a>
+                        <a class="nav-link" href="./verBeneficios.php"><i class="fa-solid fa-handshake"></i> Beneficios</a>
                     </li>
                 <?php endif; ?>
 

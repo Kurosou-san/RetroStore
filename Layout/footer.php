@@ -18,8 +18,8 @@
 <footer class="custom-footer py-3 position-relative">
     <div class="container">
         <ul class="footer-links list-unstyled d-flex justify-content-center mb-0">
-            <li class="mx-2"><a href="./aviso-privacidad.php">Aviso de Privacidad</a></li>
-            <li class="mx-2"><a href="./deslinde-responsabilidad.php">Deslinde de Responsabilidad</a></li>
+            <li class="mx-2"><a>Aviso de Privacidad</a></li>
+            <li class="mx-2"><a>Deslinde de Responsabilidad</a></li>
         </ul>
         <p class="text-center mt-2 mb-0 small">&copy; 2025 RetroStore. Todos los derechos reservados.</p>
     </div>
