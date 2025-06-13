@@ -32,6 +32,7 @@ CREATE TABLE Productos (
     Producto_Categoria VARCHAR(100), -- Campo nuevo (categoría directa)
     Producto_Precio DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     Producto_Stock INT NOT NULL DEFAULT 0,
+    Producto_Puntaje INT NOT NULL,
     Producto_Imagen VARCHAR(255),
     Producto_FechaCreacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     Producto_Estado ENUM('Disponible', 'Agotado') NOT NULL DEFAULT 'Disponible'
