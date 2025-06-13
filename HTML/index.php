@@ -32,7 +32,8 @@
         </div>
 
         <!-- PIE DE PÁGINA -->
-        <?php include '../Layout/footer.php'; ?>
+        
+        <br> <?php include '../Layout/footer.php'; ?>
     </div>
 
     <!-- Fin del Código -->
