@@ -101,7 +101,7 @@
                 </div>
 
                 <button class="btn btn-primary" type="submit">
-                    <i class="fas fa-save"></i> Actualizar Cliente
+                    <i class="fas fa-save"></i> Guardar Cambios
                 </button>
             </form>
         </div>
