@@ -20,9 +20,10 @@
                             <i class="fa-solid fa-user-gear"></i> Administrar
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="adminDropdown">
-                            <li><a class="dropdown-item" href="./adminClientes.php"><i class="fa-solid fa-users"></i> Clientes</a></li>
-                            <li><a class="dropdown-item" href="./adminPremios.php"><i class="fa-solid fa-gift"></i> Premios</a></li>
-                            <li><a class="dropdown-item" href="./adminBeneficios.php"><i class="fa-solid fa-handshake"></i> Beneficios</a></li>
+                            <li><a class="dropdown-item" href="../Admin/clientesView.php"><i class="fa-solid fa-users"></i> Clientes</a></li>
+                            <li><a class="dropdown-item" href="../Admin/productosView.php">Productos</a></li>
+                            <li><a class="dropdown-item" href="../Admin/premiosView.php"><i class="fa-solid fa-gift"></i> Premios</a></li>
+                            <li><a class="dropdown-item" href="../Admin/beneficiosView.php"><i class="fa-solid fa-handshake"></i> Beneficios</a></li>
                         </ul>
                     </li>
                 <?php endif; ?>
