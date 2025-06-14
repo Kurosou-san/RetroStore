@@ -35,7 +35,7 @@
             WHERE UsuarioID = ?";
 
         $params = [$nombre, $apellidos, $telefono, $email, $genero, $fechaNacimiento, $direccion, $ciudad, $estado, $usuarioID];
-$types = "sssssssss" . "i"; // Total: 9 's' + 1 'i' = 10 caracteres
+        $types = "sssssssss" . "i"; // Total: 9 's' + 1 'i' = 10 caracteres
 
 
 

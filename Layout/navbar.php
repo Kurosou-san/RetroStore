@@ -21,7 +21,7 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="adminDropdown">
                             <li><a class="dropdown-item" href="../Admin/clientesView.php"><i class="fa-solid fa-users"></i> Clientes</a></li>
-                            <li><a class="dropdown-item" href="../Admin/productosView.php">Productos</a></li>
+                            <li><a class="dropdown-item" href="../Admin/productosView.php"><i class="fa-solid fa-box";></i> Productos</a></li>
                             <li><a class="dropdown-item" href="../Admin/premiosView.php"><i class="fa-solid fa-gift"></i> Premios</a></li>
                             <li><a class="dropdown-item" href="../Admin/beneficiosView.php"><i class="fa-solid fa-handshake"></i> Beneficios</a></li>
                         </ul>
