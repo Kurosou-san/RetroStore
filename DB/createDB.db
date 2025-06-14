@@ -77,3 +77,14 @@ CREATE TABLE Compras (
     PuntosGenerados INT NOT NULL,
     FOREIGN KEY (UsuarioID) REFERENCES Usuarios(UsuarioID) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Tabla Carrito
+CREATE TABLE Carrito (
+    CarritoID INT AUTO_INCREMENT PRIMARY KEY,
+    Carrito_UsuarioID INT NOT NULL,  
+    Carrito_ProductoID INT NOT NULL,
+    Carrito_Cantidad INT NOT NULL, 
+    Carrito_FechaCreacion DATETIME DEFAULT CURRENT_TIMESTAMP,  
+    FOREIGN KEY (Carrito_UsuarioID) REFERENCES Usuarios(UsuarioID) ON DELETE CASCADE,
+    FOREIGN KEY (Carrito_ProductoID) REFERENCES Productos(ProductoID) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

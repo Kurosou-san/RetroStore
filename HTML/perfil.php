@@ -93,6 +93,43 @@
             </div>
         </div>
 
+        <div class="container mt-4">
+            <h3>Historial de Premios Canjeados</h3><hr>
+            <?php
+                // Asegúrate de tener conexión activa
+                $usuarioID = $_SESSION['usuario_id'];
+
+                $sqlHistorial = "
+                    SELECT P.Premio_Nombre, P.Premio_PuntosNecesarios, C.FechaCanje
+                    FROM Canjes C
+                    INNER JOIN Premios P ON C.PremioID = P.PremioID
+                    WHERE C.UsuarioID = ?
+                    ORDER BY C.FechaCanje DESC
+                ";
+
+                $stmt = $conexion->prepare($sqlHistorial);
+                $stmt->bind_param("i", $usuarioID);
+                $stmt->execute();
+                $resultado = $stmt->get_result();
+
+                if ($resultado->num_rows > 0): ?>
+                    <ul class="list-group mt-3">
+                        <?php while ($row = $resultado->fetch_assoc()): ?>
+                            <li class="list-group-item">
+                                Canjeó "<strong><?php echo htmlspecialchars($row['Premio_Nombre']); ?></strong>" el día 
+                                <strong><?php echo date('d/m/Y H:i', strtotime($row['FechaCanje'])); ?></strong>
+                                con un valor de 
+                                <strong><?php echo intval($row['Premio_PuntosNecesarios']); ?> puntos</strong>.
+                            </li>
+                        <?php endwhile; ?>
+                    </ul>
+                <?php else: ?>
+                    <div class="alert alert-info mt-3" role="alert">
+                        Aún no has canjeado ningún premio.
+                    </div>
+            <?php endif; ?>
+        </div>
+
         <!-- PIE DE PÁGINA -->
         <br> <?php include '../Layout/footer.php'; ?>
     </div>

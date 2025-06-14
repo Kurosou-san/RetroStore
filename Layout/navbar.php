@@ -36,7 +36,10 @@
                         <a class="nav-link" href="../HTML/productos.php"><i class="fa-solid fa-box"></i> Catalogo</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="./premiosCanjeables.php"><i class="fa-solid fa-gift"></i> Canjear</a>
+                        <a class="nav-link" href="../HTML/carrito.php"><i class="fa-solid fa-cart-shopping"></i> Carrito</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./premios.php"><i class="fa-solid fa-gift"></i> Canjear</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="./verBeneficios.php"><i class="fa-solid fa-handshake"></i> Beneficios</a>
