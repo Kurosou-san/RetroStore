@@ -30,42 +30,58 @@ $stmt->close();
     <?php include '../Layout/documentCDN.html'; ?>
 </head>
 <body>
-    <div class="wrapper">
-        <?php include '../Layout/navbar.php'; ?>
+<div class="wrapper">
+    <?php include '../Layout/navbar.php'; ?>
 
-        <div class="container mt-4">
-            <h2>Eliminar Beneficio</h2><hr>
-            <form action="../PHP/beneficioDelete.php" method="POST">
-                <input type="hidden" name="BeneficioID" value="<?php echo $id; ?>">
+    <div class="container mt-4">
+        <h2>Eliminar Beneficio</h2><hr>
+        <form id="formEliminarBeneficio">
+            <input type="hidden" name="BeneficioID" value="<?php echo $id; ?>">
 
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Nombre de la Empresa</label>
-                        <input class="form-control" value="<?php echo htmlspecialchars($beneficio['Empresa_Nombre']); ?>" readonly>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Activo</label>
-                        <input class="form-control" value="<?php echo $beneficio['Beneficio_Activo'] ? 'Sí' : 'No'; ?>" readonly>
-                    </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Nombre de la Empresa</label>
+                    <input class="form-control" value="<?php echo htmlspecialchars($beneficio['Empresa_Nombre']); ?>" readonly>
                 </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Descripción</label>
-                    <textarea class="form-control" rows="3" readonly><?php echo htmlspecialchars($beneficio['Beneficio_Descripcion']); ?></textarea>
+                <div class="col-md-6">
+                    <label class="form-label">Activo</label>
+                    <input class="form-control" value="<?php echo $beneficio['Beneficio_Activo'] ? 'Sí' : 'No'; ?>" readonly>
                 </div>
+            </div>
 
-                <div class="mt-4">
-                    <button class="btn btn-danger" type="submit">
-                        <i class="fas fa-trash-alt"></i> Eliminar Beneficio
-                    </button>
-                    <a href="../Admin/productosView.php" class="btn btn-secondary ms-2">
-                        Cancelar
-                    </a>
-                </div>
-            </form>
-        </div>
+            <div class="mb-3">
+                <label class="form-label">Descripción</label>
+                <textarea class="form-control" rows="3" readonly><?php echo htmlspecialchars($beneficio['Beneficio_Descripcion']); ?></textarea>
+            </div>
 
-        <br> <?php include '../Layout/footer.php'; ?>
+            <div class="mt-4">
+                <button class="btn btn-danger" type="submit">
+                    <i class="fas fa-trash-alt"></i> Eliminar Beneficio
+                </button>
+                <a href="./beneficiosView.php" class="btn btn-secondary ms-2">Cancelar</a>
+            </div>
+        </form>
     </div>
-</body>
-</html>
+
+    <br> <?php include '../Layout/footer.php'; ?>
+</div>
+
+<script>
+document.getElementById('formEliminarBeneficio').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const id = parseInt(document.querySelector('input[name="BeneficioID"]').value);
+
+    const response = await fetch('../PHP/API/beneficios.php', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ BeneficioID: id })
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+        alert('Beneficio eliminado correctamente.');
+        window.location.href = './beneficiosView.php';
+    } else {
+        alert('Error: ' + (result.error || 'No se pudo elimin

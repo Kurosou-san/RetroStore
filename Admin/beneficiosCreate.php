@@ -11,7 +11,7 @@
 
         <div class="container mt-4">
             <h2>Crear Beneficio</h2><hr>
-            <form action="../PHP/beneficioCreate.php" method="POST">
+            <form id="beneficioForm">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Nombre de la Empresa</label>
@@ -41,5 +41,35 @@
 
         <br> <?php include '../Layout/footer.php'; ?>
     </div>
+
+    <script>
+    document.getElementById('beneficioForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const data = {
+            Empresa_Nombre: form.Empresa_Nombre.value,
+            Beneficio_Descripcion: form.Beneficio_Descripcion.value,
+            Beneficio_Activo: parseInt(form.Beneficio_Activo.value)
+        };
+
+        const response = await fetch('../PHP/API/beneficios.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert('Beneficio creado correctamente.');
+            window.location.href = './beneficiosView.php';
+        } else {
+            alert('Error: ' + (result.error || 'No se pudo crear el beneficio.'));
+        }
+    });
+    </script>
 </body>
 </html>
