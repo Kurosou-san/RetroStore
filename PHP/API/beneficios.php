@@ -3,7 +3,7 @@
     require_once '../../PHP/conexion_BD.php'; // $conexion
 
     // VIEW
-    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') { 
         if (isset($_GET['id'])) {
             $id = intval($_GET['id']);
             $query = "SELECT * FROM Beneficios WHERE BeneficioID = $id";
@@ -31,7 +31,7 @@
     }
 
     // INSERT
-    elseif ($method === 'POST') {
+    elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $input = json_decode(file_get_contents("php://input"), true);
 
         if (!$input) {
@@ -71,7 +71,7 @@
     }
 
     // UPDATE
-    elseif ($method === 'PUT') {
+    elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         $input = json_decode(file_get_contents("php://input"), true);
 
         if (!$input || !isset($input['BeneficioID'])) {
@@ -112,7 +112,7 @@
     }
 
     // DELETE
-    elseif ($method === 'DELETE') {
+    elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
         $input = json_decode(file_get_contents("php://input"), true);
 
         if (!$input || !isset($input['BeneficioID'])) {

@@ -67,21 +67,26 @@ $stmt->close();
 </div>
 
 <script>
-document.getElementById('formEliminarBeneficio').addEventListener('submit', async function (e) {
-    e.preventDefault();
+    document.getElementById('formEliminarBeneficio').addEventListener('submit', async function (e) {
+        e.preventDefault();
 
-    const id = parseInt(document.querySelector('input[name="BeneficioID"]').value);
+        const id = parseInt(document.querySelector('input[name="BeneficioID"]').value);
 
-    const response = await fetch('../PHP/API/beneficios.php', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ BeneficioID: id })
+        const response = await fetch('../PHP/API/beneficios.php', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ BeneficioID: id })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert('Beneficio eliminado correctamente.');
+            window.location.href = './beneficiosView.php';
+        } else {
+            alert('Error: ' + (result.error || 'No se pudo eliminar.'));
+        }
     });
-
-    const result = await response.json();
-
-    if (response.ok) {
-        alert('Beneficio eliminado correctamente.');
-        window.location.href = './beneficiosView.php';
-    } else {
-        alert('Error: ' + (result.error || 'No se pudo elimin
+</script>
+</body>
+</html>

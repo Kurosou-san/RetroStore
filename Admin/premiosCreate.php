@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <title>Retro Store - Crear Premio</title>
+    <title>Retro Store - Crear Beneficio</title>
     <?php include '../Layout/documentCDN.html'; ?>
 </head>
 <body>
@@ -11,7 +11,7 @@
 
         <div class="container mt-4">
             <h2>Crear Premio</h2><hr>
-            <form action="../PHP/premioCreate.php" method="POST" enctype="multipart/form-data">
+            <form id="premioForm">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Nombre del Premio</label>
@@ -67,6 +67,36 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
+        
+        document.getElementById('premioForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const data = {
+                Premio_Nombre: form.Premio_Nombre.value,
+                Premio_Descripcion: form.Premio_Descripcion.value,
+                Premio_PuntosNecesarios: form.Premio_PuntosNecesarios.value,
+                Premio_Disponible: parseInt(form.Premio_Disponible.value),
+                Premio_Imagen: form.Premio_Imagen.value
+            };
+
+            const response = await fetch('../PHP/API/premios.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert('Premio creado correctamente.');
+                window.location.href = './premiosView.php';
+            } else {
+                alert('Error: ' + (result.error || 'No se pudo crear el premio.'));
+            }
+        });
     </script>
 </body>
 </html>

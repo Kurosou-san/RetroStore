@@ -6,9 +6,7 @@
     <?php include '../Layout/documentCDN.html'; ?>
 </head>
 <body>
-    <!-- Inicio del Código -->
     <div class="wrapper">
-        <!-- BARRA DE NAVEGACIÓN -->
         <?php include '../Layout/navbar.php'; ?>
 
         <div class="container mt-4">
@@ -38,27 +36,6 @@
                 </div>
             </form>
 
-            <?php
-                include '../PHP/conexion_BD.php';
-
-                $items_per_page = isset($_GET['items_per_page']) ? (int)$_GET['items_per_page'] : 10;
-                $search = isset($_GET['search']) ? mysqli_real_escape_string($conexion, $_GET['search']) : '';
-
-                $query_count = "SELECT COUNT(*) FROM Premios WHERE Premio_Nombre LIKE '%$search%'";
-                $result_count = mysqli_query($conexion, $query_count);
-                $total_items = mysqli_fetch_row($result_count)[0];
-                $total_pages = ceil($total_items / $items_per_page);
-
-                $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-                $offset = ($current_page - 1) * $items_per_page;
-
-                $query = "SELECT PremioID, Premio_Nombre, Premio_Descripcion, Premio_PuntosNecesarios, Premio_Disponible 
-                          FROM Premios 
-                          WHERE Premio_Nombre LIKE '%$search%' 
-                          LIMIT $items_per_page OFFSET $offset";
-                $result = mysqli_query($conexion, $query);
-            ?>
-
             <table class="table table-bordered table-striped">
                 <thead class="table-dark text-center">
                     <tr>
@@ -71,48 +48,86 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-                        <tr>
-                            <td class="text-center"><?php echo $row['PremioID']; ?></td>
-                            <td><?php echo $row['Premio_Nombre']; ?></td>
-                            <td><?php echo $row['Premio_Descripcion']; ?></td>
-                            <td class="text-center"><?php echo $row['Premio_PuntosNecesarios']; ?></td>
-                            <td class="text-center"><?php echo $row['Premio_Disponible'] ? 'Sí' : 'No'; ?></td>
-                            <td class="text-center">
-                                <a href="./premiosEdit.php?id=<?php echo $row['PremioID']; ?>" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="./premiosDelete.php?id=<?php echo $row['PremioID']; ?>" class="btn btn-sm btn-danger">
-                                    <i class="fas fa-trash-alt"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    <?php } ?>
+                    <!-- Contenido dinámico por JavaScript -->
                 </tbody>
             </table>
-
-            <!-- Paginación -->
+            
+            <!-- Paginación (solo cambia si decides también hacerla por JS en el futuro) -->
             <div class="d-flex justify-content-between">
                 <div>
-                    <p>Mostrando <?php echo $current_page; ?> de <?php echo $total_pages; ?> páginas</p>
+                    <p id="pagination-info"></p>
                 </div>
                 <div>
                     <ul class="pagination">
+                        <?php
+                            $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+                            $items_per_page = isset($_GET['items_per_page']) ? (int)$_GET['items_per_page'] : 10;
+                            $search = isset($_GET['search']) ? $_GET['search'] : '';
+                            $prev_page = max(1, $current_page - 1);
+                            $next_page = $current_page + 1;
+                        ?>
                         <li class="page-item <?php echo $current_page <= 1 ? 'disabled' : ''; ?>">
-                            <a class="page-link" href="?page=<?php echo $current_page - 1; ?>&search=<?php echo $search; ?>&items_per_page=<?php echo $items_per_page; ?>">Anterior</a>
+                            <a class="page-link" href="?page=<?php echo $prev_page; ?>&search=<?php echo $search; ?>&items_per_page=<?php echo $items_per_page; ?>">Anterior</a>
                         </li>
-                        <li class="page-item <?php echo $current_page >= $total_pages ? 'disabled' : ''; ?>">
-                            <a class="page-link" href="?page=<?php echo $current_page + 1; ?>&search=<?php echo $search; ?>&items_per_page=<?php echo $items_per_page; ?>">Siguiente</a>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?php echo $next_page; ?>&search=<?php echo $search; ?>&items_per_page=<?php echo $items_per_page; ?>">Siguiente</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <!-- PIE DE PÁGINA -->
         <br> <?php include '../Layout/footer.php'; ?>
     </div>
 
-    <!-- Fin del Código -->
+    <!-- Script para consumir la API -->
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const params = new URLSearchParams(window.location.search);
+        const search = params.get('search') || '';
+        const itemsPerPage = parseInt(params.get('items_per_page')) || 10;
+        const currentPage = parseInt(params.get('page')) || 1;
+        const offset = (currentPage - 1) * itemsPerPage;
+
+        fetch(`../PHP/API/premios.php?search=${encodeURIComponent(search)}&limit=${itemsPerPage}&offset=${offset}`)
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('tbody');
+                const paginationInfo = document.getElementById('pagination-info');
+                tbody.innerHTML = '';
+                
+                if (data.length === 0) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td colspan="5" class="text-center">No se encontraron resultados</td>`;
+                    tbody.appendChild(tr);
+                } else {
+                    data.forEach(row => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="text-center">${row.PremioID}</td>
+                            <td>${row.Premio_Nombre}</td>
+                            <td>${row.Premio_Descripcion}</td>
+                            <td>${row.Premio_PuntosNecesarios}</td>
+                            <td class="text-center">${row.Premio_Disponible == 1 ? 'Sí' : 'No'}</td>
+                            <td class="text-center">
+                                <a href="./premiosEdit.php?id=${row.PremioID}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="./premiosDelete.php?id=${row.PremioID}" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+
+                paginationInfo.textContent = `Página ${currentPage}`;
+            })
+            .catch(err => {
+                console.error('Error al obtener datos de la API:', err);
+            });
+    });
+    </script>
 </body>
 </html>
