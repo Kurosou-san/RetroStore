@@ -2,13 +2,11 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <title>Retro Store - Administrar Clientes</title>
+    <title>Retro Store - Administrar Beneficios</title>
     <?php include '../Layout/documentCDN.html'; ?>
 </head>
 <body>
-    <!-- Inicio del Código -->
     <div class="wrapper">
-        <!-- BARRA DE NAVEGACIÓN -->
         <?php include '../Layout/navbar.php'; ?>
 
         <div class="container mt-4">
@@ -17,13 +15,12 @@
                 <i class="fas fa-plus"></i> Registrar Cliente
             </a>
 
-            <!-- Formulario para buscar y seleccionar el número de elementos por página -->
             <form method="GET" class="mb-3">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="d-flex align-items-center">
                             <span class="me-2">Mostrando</span>
-                            <select name="items_per_page" class="form-select w-auto me-2">
+                            <select name="items_per_page" class="form-select w-auto me-2" onchange="this.form.submit()">
                                 <option value="10" <?php echo isset($_GET['items_per_page']) && $_GET['items_per_page'] == 10 ? 'selected' : ''; ?>>10</option>
                                 <option value="25" <?php echo isset($_GET['items_per_page']) && $_GET['items_per_page'] == 25 ? 'selected' : ''; ?>>25</option>
                                 <option value="50" <?php echo isset($_GET['items_per_page']) && $_GET['items_per_page'] == 50 ? 'selected' : ''; ?>>50</option>
@@ -33,31 +30,10 @@
                     </div>
 
                     <div class="col-md-6">
-                        <input type="text" name="search" class="form-control" placeholder="Buscar producto" value="<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>">
+                        <input type="text" name="search" class="form-control" placeholder="Buscar cliente" value="<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>">
                     </div>
                 </div>
             </form>
-
-            <?php
-                include '../PHP/conexion_BD.php';
-
-                $items_per_page = isset($_GET['items_per_page']) ? (int)$_GET['items_per_page'] : 10;
-                $search = isset($_GET['search']) ? mysqli_real_escape_string($conexion, $_GET['search']) : '';
-
-                $query_count = "SELECT COUNT(*) FROM Usuarios WHERE CONCAT(Usuario_Nombre, ' ', Usuario_Apellidos) LIKE '%$search%'";
-                $result_count = mysqli_query($conexion, $query_count);
-                $total_items = mysqli_fetch_row($result_count)[0];
-                $total_pages = ceil($total_items / $items_per_page);
-
-                $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-                $offset = ($current_page - 1) * $items_per_page;
-
-                $query = "SELECT UsuarioID, Usuario_Nombre, Usuario_Apellidos, Usuario_Email, Usuario_Telefono 
-                        FROM Usuarios 
-                        WHERE CONCAT(Usuario_Nombre, ' ', Usuario_Apellidos) LIKE '%$search%' 
-                        LIMIT $items_per_page OFFSET $offset";
-                $result = mysqli_query($conexion, $query);
-            ?>
 
             <table class="table table-bordered table-striped">
                 <thead class="table-dark text-center">
@@ -70,48 +46,85 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-                        <tr>
-                            <td class="text-center"><?php echo $row['UsuarioID']; ?></td>
-                            <td><?php echo $row['Usuario_Nombre'] . ' ' . $row['Usuario_Apellidos']; ?></td>
-                            <td><?php echo $row['Usuario_Email']; ?></td>
-                            <td class="text-center"><?php echo $row['Usuario_Telefono']; ?></td>
-                            <td class="text-center">
-                                <a href="./clientesEdit.php?id=<?php echo $row['UsuarioID']; ?>" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="./clientesDelete.php?id=<?php echo $row['UsuarioID']; ?>" class="btn btn-sm btn-danger">
-                                    <i class="fas fa-trash-alt"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    <?php } ?>
+                    <!-- Contenido dinámico por JavaScript -->
                 </tbody>
             </table>
 
-            <!-- Paginación -->
+            <!-- Paginación (solo cambia si decides también hacerla por JS en el futuro) -->
             <div class="d-flex justify-content-between">
                 <div>
-                    <p>Mostrando <?php echo $current_page; ?> de <?php echo $total_pages; ?> páginas</p>
+                    <p id="pagination-info"></p>
                 </div>
                 <div>
                     <ul class="pagination">
+                        <?php
+                            $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+                            $items_per_page = isset($_GET['items_per_page']) ? (int)$_GET['items_per_page'] : 10;
+                            $search = isset($_GET['search']) ? $_GET['search'] : '';
+                            $prev_page = max(1, $current_page - 1);
+                            $next_page = $current_page + 1;
+                        ?>
                         <li class="page-item <?php echo $current_page <= 1 ? 'disabled' : ''; ?>">
-                            <a class="page-link" href="?page=<?php echo $current_page - 1; ?>&search=<?php echo $search; ?>&items_per_page=<?php echo $items_per_page; ?>">Anterior</a>
+                            <a class="page-link" href="?page=<?php echo $prev_page; ?>&search=<?php echo $search; ?>&items_per_page=<?php echo $items_per_page; ?>">Anterior</a>
                         </li>
-                        <li class="page-item <?php echo $current_page >= $total_pages ? 'disabled' : ''; ?>">
-                            <a class="page-link" href="?page=<?php echo $current_page + 1; ?>&search=<?php echo $search; ?>&items_per_page=<?php echo $items_per_page; ?>">Siguiente</a>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?php echo $next_page; ?>&search=<?php echo $search; ?>&items_per_page=<?php echo $items_per_page; ?>">Siguiente</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <!-- PIE DE PÁGINA -->
         <br> <?php include '../Layout/footer.php'; ?>
     </div>
 
-    <!-- Fin del Código -->
-    <!-- Scritps Adicionales -->
+    <!-- Script para consumir la API -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const params = new URLSearchParams(window.location.search);
+            const search = params.get('search') || '';
+            const itemsPerPage = parseInt(params.get('items_per_page')) || 10;
+            const currentPage = parseInt(params.get('page')) || 1;
+            const offset = (currentPage - 1) * itemsPerPage;
+
+            fetch(`../PHP/API/clientes.php?search=${encodeURIComponent(search)}&limit=${itemsPerPage}&offset=${offset}`)
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.querySelector('tbody');
+                    const paginationInfo = document.getElementById('pagination-info');
+                    tbody.innerHTML = '';
+                    
+                    if (data.length === 0) {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td colspan="5" class="text-center">No se encontraron resultados</td>`;
+                        tbody.appendChild(tr);
+                    } else {
+                        data.forEach(row => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td class="text-center">${row.UsuarioID}</td>
+                                <td>${row.Usuario_Nombre} ${row.Usuario_Apellidos}</td>
+                                <td>${row.Usuario_Email}</td>
+                                <td>${row.Usuario_Telefono}</td>
+                                <td class="text-center">
+                                    <a href="./clientesEdit.php?id=${row.UsuarioID}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="./clientesDelete.php?id=${row.UsuarioID}" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    }
+
+                    paginationInfo.textContent = `Página ${currentPage}`;
+                })
+                .catch(err => {
+                    console.error('Error al obtener datos de la API:', err);
+                });
+        });
+    </script>
 </body>
 </html>
