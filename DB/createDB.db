@@ -9,7 +9,7 @@ CREATE TABLE Usuarios (
     Usuario_Telefono VARCHAR(10) NOT NULL UNIQUE,
     Usuario_Email VARCHAR(100) NOT NULL,
     Usuario_Contraseña VARCHAR(255) NOT NULL, 
-    Usuario_Genero ENUM('Masculino', 'Femenino', 'Otro')
+    Usuario_Genero ENUM('Masculino', 'Femenino', 'Otro'),
     Usuario_FechaNacimiento DATE, 
     Usuario_Direccion VARCHAR(255),
     Usuario_Ciudad VARCHAR(50),

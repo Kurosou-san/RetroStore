@@ -9,25 +9,39 @@
             $query = "SELECT * FROM Usuarios WHERE UsuarioID = $id";
             $result = mysqli_query($conexion, $query);
             echo json_encode(mysqli_fetch_assoc($result));
-        } else {
-            $search = isset($_GET['search']) ? mysqli_real_escape_string($conexion, $_GET['search']) : '';
-            $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 10;
-            $offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
-
-            $query = "SELECT UsuarioID, Usuario_Nombre, Usuario_Apellidos, Usuario_Email, Usuario_Telefono 
-                    FROM Usuarios 
-                    WHERE CONCAT(Usuario_Nombre, ' ', Usuario_Apellidos) LIKE '%$search%' 
-                    LIMIT $limit OFFSET $offset";
-
-            $result = mysqli_query($conexion, $query);
-            $usuarios = [];
-
-            while ($row = mysqli_fetch_assoc($result)) {
-                $usuarios[] = $row;
-            }
-
-            echo json_encode($usuarios);
+            exit;
         }
+
+        $search = isset($_GET['search']) ? mysqli_real_escape_string($conexion, $_GET['search']) : '';
+        
+        // Consulta solo para contar registros
+        if (isset($_GET['count']) && $_GET['count'] === 'true') {
+            $query = "SELECT COUNT(*) AS total FROM Usuarios 
+                    WHERE CONCAT(Usuario_Nombre, ' ', Usuario_Apellidos) LIKE '%$search%'";
+            $result = mysqli_query($conexion, $query);
+            $row = mysqli_fetch_assoc($result);
+            echo json_encode(['total' => intval($row['total'])]);
+            exit;
+        }
+
+        // Consulta para obtener los registros paginados
+        $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 10;
+        $offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
+
+        $query = "SELECT UsuarioID, Usuario_Nombre, Usuario_Apellidos, Usuario_Email, Usuario_Telefono 
+                FROM Usuarios 
+                WHERE CONCAT(Usuario_Nombre, ' ', Usuario_Apellidos) LIKE '%$search%' 
+                LIMIT $limit OFFSET $offset";
+
+        $result = mysqli_query($conexion, $query);
+        $usuarios = [];
+
+        while ($row = mysqli_fetch_assoc($result)) {
+            $usuarios[] = $row;
+        }
+
+        echo json_encode($usuarios);
+        exit;
     }
 
     // INSERT

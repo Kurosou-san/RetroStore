@@ -9,25 +9,39 @@
             $query = "SELECT * FROM Premios WHERE PremioID = $id";
             $result = mysqli_query($conexion, $query);
             echo json_encode(mysqli_fetch_assoc($result));
-        } else {
-            $search = isset($_GET['search']) ? mysqli_real_escape_string($conexion, $_GET['search']) : '';
-            $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 10;
-            $offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
-
-            $query = "SELECT PremioID, Premio_Nombre, Premio_Descripcion, Premio_PuntosNecesarios, Premio_Disponible 
-                    FROM Premios 
-                    WHERE Premio_Nombre LIKE '%$search%' 
-                    LIMIT $limit OFFSET $offset";
-
-            $result = mysqli_query($conexion, $query);
-            $premios = [];
-
-            while ($row = mysqli_fetch_assoc($result)) {
-                $premios[] = $row;
-            }
-
-            echo json_encode($premios);
+            exit;
         }
+
+        $search = isset($_GET['search']) ? mysqli_real_escape_string($conexion, $_GET['search']) : '';
+
+        // Consulta solo para contar registros
+        if (isset($_GET['count']) && $_GET['count'] === 'true') {
+            $query = "SELECT COUNT(*) AS total FROM Premios 
+                    WHERE Premio_Nombre LIKE '%$search%'";
+            $result = mysqli_query($conexion, $query);
+            $row = mysqli_fetch_assoc($result);
+            echo json_encode(['total' => intval($row['total'])]);
+            exit;
+        }
+
+        // Consulta para obtener los registros paginados
+        $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 10;
+        $offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
+
+        $query = "SELECT PremioID, Premio_Nombre, Premio_Descripcion, Premio_PuntosNecesarios, Premio_Disponible 
+                FROM Premios 
+                WHERE Premio_Nombre LIKE '%$search%' 
+                LIMIT $limit OFFSET $offset";
+
+        $result = mysqli_query($conexion, $query);
+        $premios = [];
+
+        while ($row = mysqli_fetch_assoc($result)) {
+            $premios[] = $row;
+        }
+
+        echo json_encode($premios);
+        exit;
     }
 
     // INSERT
@@ -69,8 +83,10 @@
 
     // UPDATE
     elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-        // Para PUT con FormData se requiere este método
-        parse_str(file_get_contents("php://input"), $putVars);
+        header('Content-Type: application/json');
+
+        $putData = file_get_contents("php://input");
+        $putVars = json_decode($putData, true);
 
         if (!$putVars || !isset($putVars['PremioID'])) {
             http_response_code(400);
@@ -78,6 +94,7 @@
             exit;
         }
 
+        // Obtener datos
         $id            = (int)$putVars['PremioID'];
         $nombre        = trim($putVars['Premio_Nombre'] ?? '');
         $descripcion   = $putVars['Premio_Descripcion'] ?? null;
@@ -85,27 +102,14 @@
         $disponible    = (int)($putVars['Premio_Disponible'] ?? 0);
         $imagenRuta    = $putVars['Premio_Imagen_Actual'] ?? null;
 
+        // Validación básica
         if ($nombre === '') {
             http_response_code(422);
             echo json_encode(['error' => 'El nombre del premio es obligatorio']);
             exit;
         }
 
-        // Procesar imagen si se adjunta una nueva
-        if (isset($_FILES['Premio_Imagen']) && $_FILES['Premio_Imagen']['error'] === UPLOAD_ERR_OK) {
-            $nombreArchivoOriginal = basename($_FILES['Premio_Imagen']['name']);
-            $extension = pathinfo($nombreArchivoOriginal, PATHINFO_EXTENSION);
-
-            $nombreLimpio = preg_replace("/[^a-zA-Z0-9_-]/", "", strtolower(str_replace(" ", "_", $nombre)));
-            $nombreFinalArchivo = $nombreLimpio . "." . $extension;
-
-            $rutaDestino = '../../Media/Premios/' . $nombreFinalArchivo;
-
-            if (move_uploaded_file($_FILES['Premio_Imagen']['tmp_name'], $rutaDestino)) {
-                $imagenRuta = $rutaDestino;
-            }
-        }
-
+        // Preparar SQL según presencia de imagen
         if ($imagenRuta !== null) {
             $stmt = $conexion->prepare("
                 UPDATE Premios
@@ -122,6 +126,7 @@
             $stmt->bind_param("ssiii", $nombre, $descripcion, $puntos, $disponible, $id);
         }
 
+        // Ejecutar y responder
         if ($stmt->execute()) {
             http_response_code(200);
             echo json_encode(['message' => 'Premio actualizado correctamente']);

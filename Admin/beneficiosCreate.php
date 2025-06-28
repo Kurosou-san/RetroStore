@@ -7,8 +7,7 @@
 </head>
 <body>
     <div class="wrapper">
-        <?php include '../Layout/navbar.php'; ?>
-
+        <?php include '../Layout/navbar.php'; ?> <!-- Navbar -->
         <div class="container mt-4">
             <h2>Crear Beneficio</h2><hr>
             <form id="beneficioForm">
@@ -38,38 +37,37 @@
                 </button>
             </form>
         </div>
-
-        <br> <?php include '../Layout/footer.php'; ?>
+        <br> <?php include '../Layout/footer.php'; ?> <!-- Footer -->
     </div>
-
+    <!-- Script de API Beneficios -->
     <script>
-    document.getElementById('beneficioForm').addEventListener('submit', async function (e) {
-        e.preventDefault();
+        document.getElementById('beneficioForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
 
-        const form = e.target;
-        const data = {
-            Empresa_Nombre: form.Empresa_Nombre.value,
-            Beneficio_Descripcion: form.Beneficio_Descripcion.value,
-            Beneficio_Activo: parseInt(form.Beneficio_Activo.value)
-        };
+            const form = e.target;
+            const data = {
+                Empresa_Nombre: form.Empresa_Nombre.value,
+                Beneficio_Descripcion: form.Beneficio_Descripcion.value,
+                Beneficio_Activo: parseInt(form.Beneficio_Activo.value)
+            };
 
-        const response = await fetch('../PHP/API/beneficios.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
+            const response = await fetch('../PHP/API/beneficios.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert('Beneficio creado correctamente.');
+                window.location.href = './beneficiosView.php';
+            } else {
+                alert('Error: ' + (result.error || 'No se pudo crear el beneficio.'));
+            }
         });
-
-        const result = await response.json();
-
-        if (response.ok) {
-            alert('Beneficio creado correctamente.');
-            window.location.href = './beneficiosView.php';
-        } else {
-            alert('Error: ' + (result.error || 'No se pudo crear el beneficio.'));
-        }
-    });
     </script>
 </body>
 </html>

@@ -3,31 +3,45 @@
     require_once '../../PHP/conexion_BD.php'; // $conexion
 
     // VIEW
-    if ($_SERVER['REQUEST_METHOD'] === 'GET') { 
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         if (isset($_GET['id'])) {
             $id = intval($_GET['id']);
             $query = "SELECT * FROM Beneficios WHERE BeneficioID = $id";
             $result = mysqli_query($conexion, $query);
             echo json_encode(mysqli_fetch_assoc($result));
-        } else {
-            $search = isset($_GET['search']) ? mysqli_real_escape_string($conexion, $_GET['search']) : '';
-            $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 10;
-            $offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
-
-            $query = "SELECT BeneficioID, Empresa_Nombre, Beneficio_Descripcion, Beneficio_Activo 
-                    FROM Beneficios 
-                    WHERE Empresa_Nombre LIKE '%$search%' 
-                    LIMIT $limit OFFSET $offset";
-
-            $result = mysqli_query($conexion, $query);
-            $beneficios = [];
-
-            while ($row = mysqli_fetch_assoc($result)) {
-                $beneficios[] = $row;
-            }
-
-            echo json_encode($beneficios);
+            exit;
         }
+
+        $search = isset($_GET['search']) ? mysqli_real_escape_string($conexion, $_GET['search']) : '';
+
+        // Consulta solo para contar registros
+        if (isset($_GET['count']) && $_GET['count'] === 'true') {
+            $query = "SELECT COUNT(*) AS total FROM Beneficios 
+                    WHERE Empresa_Nombre LIKE '%$search%'";
+            $result = mysqli_query($conexion, $query);
+            $row = mysqli_fetch_assoc($result);
+            echo json_encode(['total' => intval($row['total'])]);
+            exit;
+        }
+
+        // Consulta para obtener los registros paginados
+        $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 10;
+        $offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
+
+        $query = "SELECT BeneficioID, Empresa_Nombre, Beneficio_Descripcion, Beneficio_Activo 
+                FROM Beneficios 
+                WHERE Empresa_Nombre LIKE '%$search%' 
+                LIMIT $limit OFFSET $offset";
+
+        $result = mysqli_query($conexion, $query);
+        $beneficios = [];
+
+        while ($row = mysqli_fetch_assoc($result)) {
+            $beneficios[] = $row;
+        }
+
+        echo json_encode($beneficios);
+        exit;
     }
 
     // INSERT

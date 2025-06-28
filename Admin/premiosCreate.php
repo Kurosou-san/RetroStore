@@ -2,16 +2,15 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <title>Retro Store - Crear Beneficio</title>
+    <title>Retro Store - Crear Premio</title>
     <?php include '../Layout/documentCDN.html'; ?>
 </head>
 <body>
     <div class="wrapper">
-        <?php include '../Layout/navbar.php'; ?>
-
+        <?php include '../Layout/navbar.php'; ?> <!-- Navbar -->
         <div class="container mt-4">
             <h2>Crear Premio</h2><hr>
-            <form id="premioForm">
+            <form id="premioForm" enctype="multipart/form-data">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Nombre del Premio</label>
@@ -50,10 +49,9 @@
                 </button>
             </form>
         </div>
-
-        <br> <?php include '../Layout/footer.php'; ?>
+        <br> <?php include '../Layout/footer.php'; ?> <!-- Footer-->
     </div>
-
+    <!-- Script de API Premios -->
     <script>
         function mostrarVistaPrevia(event) {
             const input = event.target;
@@ -67,17 +65,42 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
-        
+
         document.getElementById('premioForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const form = e.target;
+            const archivo = form.Premio_Imagen.files[0];
+            let imagenURL = null;
+
+            // Subir imagen si existe
+            if (archivo) {
+                const formDataImg = new FormData();
+                formDataImg.append('Premio_Imagen', archivo);
+                formDataImg.append('Premio_Nombre', form.Premio_Nombre.value);
+
+                const imgResponse = await fetch('../PHP/API/premiosNuevaImagen.php', {
+                    method: 'POST',
+                    body: formDataImg
+                });
+
+                const imgResult = await imgResponse.json();
+
+                if (!imgResponse.ok) {
+                    alert('Error al subir imagen: ' + (imgResult.error || ''));
+                    return;
+                }
+
+                imagenURL = imgResult.ruta;
+            }
+
+            // Enviar datos para crear premio
             const data = {
                 Premio_Nombre: form.Premio_Nombre.value,
                 Premio_Descripcion: form.Premio_Descripcion.value,
-                Premio_PuntosNecesarios: form.Premio_PuntosNecesarios.value,
+                Premio_PuntosNecesarios: parseInt(form.Premio_PuntosNecesarios.value),
                 Premio_Disponible: parseInt(form.Premio_Disponible.value),
-                Premio_Imagen: form.Premio_Imagen.value
+                Premio_Imagen: imagenURL // Aquí se envía la ruta relativa
             };
 
             const response = await fetch('../PHP/API/premios.php', {

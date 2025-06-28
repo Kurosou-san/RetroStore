@@ -7,14 +7,13 @@
 </head>
 <body>
     <div class="wrapper">
-        <?php include '../Layout/navbar.php'; ?>
-
+        <?php include '../Layout/navbar.php'; ?> <!-- Navbar -->
         <div class="container mt-4">
             <h2>Administrar Beneficios</h2><hr>
             <a href="./beneficiosCreate.php" class="btn btn-success mb-3">
                 <i class="fas fa-plus"></i> Agregar Beneficio
             </a>
-
+            <!-- Formulario para buscar y seleccionar el número de elementos por página -->
             <form method="GET" class="mb-3">
                 <div class="row">
                     <div class="col-md-6">
@@ -50,7 +49,7 @@
                 </tbody>
             </table>
 
-            <!-- Paginación (solo cambia si decides también hacerla por JS en el futuro) -->
+            <!-- Paginación -->
             <div class="d-flex justify-content-between">
                 <div>
                     <p id="pagination-info"></p>
@@ -74,57 +73,82 @@
                 </div>
             </div>
         </div>
-
-        <br> <?php include '../Layout/footer.php'; ?>
+        <br> <?php include '../Layout/footer.php'; ?> <!-- Footer -->
     </div>
-
-    <!-- Script para consumir la API -->
+    <!-- Script de API Beneficios -->
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const params = new URLSearchParams(window.location.search);
-        const search = params.get('search') || '';
-        const itemsPerPage = parseInt(params.get('items_per_page')) || 10;
-        const currentPage = parseInt(params.get('page')) || 1;
-        const offset = (currentPage - 1) * itemsPerPage;
+        document.addEventListener("DOMContentLoaded", function () {
+            const params = new URLSearchParams(window.location.search);
+            const search = params.get('search') || '';
+            const itemsPerPage = parseInt(params.get('items_per_page')) || 10;
+            const currentPage = parseInt(params.get('page')) || 1;
+            const offset = (currentPage - 1) * itemsPerPage;
 
-        fetch(`../PHP/API/beneficios.php?search=${encodeURIComponent(search)}&limit=${itemsPerPage}&offset=${offset}`)
-            .then(res => res.json())
-            .then(data => {
-                const tbody = document.querySelector('tbody');
-                const paginationInfo = document.getElementById('pagination-info');
-                tbody.innerHTML = '';
-                
-                if (data.length === 0) {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td colspan="5" class="text-center">No se encontraron resultados</td>`;
-                    tbody.appendChild(tr);
-                } else {
-                    data.forEach(row => {
+            // Cargar datos paginados
+            fetch(`../PHP/API/beneficios.php?search=${encodeURIComponent(search)}&limit=${itemsPerPage}&offset=${offset}`)
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.querySelector('tbody');
+                    tbody.innerHTML = '';
+
+                    if (data.length === 0) {
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td class="text-center">${row.BeneficioID}</td>
-                            <td>${row.Empresa_Nombre}</td>
-                            <td>${row.Beneficio_Descripcion}</td>
-                            <td class="text-center">${row.Beneficio_Activo == 1 ? 'Sí' : 'No'}</td>
-                            <td class="text-center">
-                                <a href="./beneficiosEdit.php?id=${row.BeneficioID}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="./beneficiosDelete.php?id=${row.BeneficioID}" class="btn btn-sm btn-danger">
-                                    <i class="fas fa-trash-alt"></i>
-                                </a>
-                            </td>
-                        `;
+                        tr.innerHTML = `<td colspan="5" class="text-center">No se encontraron resultados</td>`;
                         tbody.appendChild(tr);
-                    });
-                }
+                    } else {
+                        data.forEach(row => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td class="text-center">${row.BeneficioID}</td>
+                                <td>${row.Empresa_Nombre}</td>
+                                <td>${row.Beneficio_Descripcion}</td>
+                                <td class="text-center">${row.Beneficio_Activo == 1 ? 'Sí' : 'No'}</td>
+                                <td class="text-center">
+                                    <a href="./beneficiosEdit.php?id=${row.BeneficioID}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="./beneficiosDelete.php?id=${row.BeneficioID}" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.error('Error al obtener datos de la API:', err);
+                });
 
-                paginationInfo.textContent = `Página ${currentPage}`;
-            })
-            .catch(err => {
-                console.error('Error al obtener datos de la API:', err);
-            });
-    });
+            // Obtener cantidad total de registros
+            fetch(`../PHP/API/beneficios.php?search=${encodeURIComponent(search)}&count=true`)
+                .then(res => res.json())
+                .then(data => {
+                    const totalRecords = data.total;
+                    const totalPages = Math.max(1, Math.ceil(totalRecords / itemsPerPage));
+                    const paginationText = document.getElementById('pagination-info');
+                    paginationText.textContent = `Mostrando página ${currentPage} de ${totalPages}`;
+
+                    // Actualizar botones de paginación
+                    const prevBtn = document.querySelector('.pagination .page-item:first-child');
+                    const nextBtn = document.querySelector('.pagination .page-item:last-child');
+
+                    if (currentPage <= 1) {
+                        prevBtn.classList.add('disabled');
+                    } else {
+                        prevBtn.classList.remove('disabled');
+                    }
+
+                    if (currentPage >= totalPages) {
+                        nextBtn.classList.add('disabled');
+                    } else {
+                        nextBtn.classList.remove('disabled');
+                    }
+                })
+                .catch(err => {
+                    console.error('Error al obtener total de registros:', err);
+                });
+        });
     </script>
 </body>
 </html>

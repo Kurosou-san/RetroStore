@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <title>Retro Store - Administrar Beneficios</title>
+    <title>Retro Store - Administrar Clientes</title>
     <?php include '../Layout/documentCDN.html'; ?>
 </head>
 <body>
@@ -30,7 +30,7 @@
                     </div>
 
                     <div class="col-md-6">
-                        <input type="text" name="search" class="form-control" placeholder="Buscar cliente" value="<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>">
+                        <input type="text" name="search" class="form-control" placeholder="Buscar cliente" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
                     </div>
                 </div>
             </form>
@@ -50,25 +50,29 @@
                 </tbody>
             </table>
 
-            <!-- Paginación (solo cambia si decides también hacerla por JS en el futuro) -->
+            <?php
+                $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+                $items_per_page = isset($_GET['items_per_page']) ? (int)$_GET['items_per_page'] : 10;
+                $search = isset($_GET['search']) ? $_GET['search'] : '';
+                $prev_page = max(1, $current_page - 1);
+                $next_page = $current_page + 1;
+
+                // Inicializamos total_pages en 1, se actualizará con JS luego
+                $total_pages = 1;
+            ?>
+
+            <!-- Paginación -->
             <div class="d-flex justify-content-between">
                 <div>
-                    <p id="pagination-info"></p>
+                    <p id="pagination-text">Mostrando 1 de 1 páginas</p>
                 </div>
                 <div>
                     <ul class="pagination">
-                        <?php
-                            $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-                            $items_per_page = isset($_GET['items_per_page']) ? (int)$_GET['items_per_page'] : 10;
-                            $search = isset($_GET['search']) ? $_GET['search'] : '';
-                            $prev_page = max(1, $current_page - 1);
-                            $next_page = $current_page + 1;
-                        ?>
                         <li class="page-item <?php echo $current_page <= 1 ? 'disabled' : ''; ?>">
-                            <a class="page-link" href="?page=<?php echo $prev_page; ?>&search=<?php echo $search; ?>&items_per_page=<?php echo $items_per_page; ?>">Anterior</a>
+                            <a class="page-link" href="?page=<?php echo $prev_page; ?>&search=<?php echo urlencode($search); ?>&items_per_page=<?php echo $items_per_page; ?>">Anterior</a>
                         </li>
                         <li class="page-item">
-                            <a class="page-link" href="?page=<?php echo $next_page; ?>&search=<?php echo $search; ?>&items_per_page=<?php echo $items_per_page; ?>">Siguiente</a>
+                            <a class="page-link" href="?page=<?php echo $next_page; ?>&search=<?php echo urlencode($search); ?>&items_per_page=<?php echo $items_per_page; ?>">Siguiente</a>
                         </li>
                     </ul>
                 </div>
@@ -87,13 +91,13 @@
             const currentPage = parseInt(params.get('page')) || 1;
             const offset = (currentPage - 1) * itemsPerPage;
 
+            // Cargar datos paginados
             fetch(`../PHP/API/clientes.php?search=${encodeURIComponent(search)}&limit=${itemsPerPage}&offset=${offset}`)
                 .then(res => res.json())
                 .then(data => {
                     const tbody = document.querySelector('tbody');
-                    const paginationInfo = document.getElementById('pagination-info');
                     tbody.innerHTML = '';
-                    
+
                     if (data.length === 0) {
                         const tr = document.createElement('tr');
                         tr.innerHTML = `<td colspan="5" class="text-center">No se encontraron resultados</td>`;
@@ -118,11 +122,38 @@
                             tbody.appendChild(tr);
                         });
                     }
-
-                    paginationInfo.textContent = `Página ${currentPage}`;
                 })
                 .catch(err => {
                     console.error('Error al obtener datos de la API:', err);
+                });
+
+            // Obtener cantidad total de registros
+            fetch(`../PHP/API/clientes.php?search=${encodeURIComponent(search)}&count=true`)
+                .then(res => res.json())
+                .then(data => {
+                    const totalRecords = data.total;
+                    const totalPages = Math.max(1, Math.ceil(totalRecords / itemsPerPage));
+                    const paginationText = document.getElementById('pagination-text');
+                    paginationText.textContent = `Mostrando página ${currentPage} de ${totalPages}`;
+
+                    // Actualizar botones de paginación
+                    const prevBtn = document.querySelector('.pagination .page-item:first-child');
+                    const nextBtn = document.querySelector('.pagination .page-item:last-child');
+
+                    if (currentPage <= 1) {
+                        prevBtn.classList.add('disabled');
+                    } else {
+                        prevBtn.classList.remove('disabled');
+                    }
+
+                    if (currentPage >= totalPages) {
+                        nextBtn.classList.add('disabled');
+                    } else {
+                        nextBtn.classList.remove('disabled');
+                    }
+                })
+                .catch(err => {
+                    console.error('Error al obtener total de registros:', err);
                 });
         });
     </script>
