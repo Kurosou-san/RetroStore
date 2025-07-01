@@ -6,14 +6,11 @@
     <?php include '../Layout/documentCDN.html'; ?>
 </head>
 <body>
-    <!-- Inicio del Código -->
     <div class="wrapper">
-        <!-- BARRA DE NAVEGACIÓN -->
-        <?php include '../Layout/navbar.php'; ?>
-
+        <?php include '../Layout/navbar.php'; ?> <!-- Navbar -->
         <div class="container mt-4">
             <h2>Registrar Cliente</h2><hr>
-            <form action="../PHP/clienteCreate.php" method="POST">
+            <form id="clienteForm">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Nombre</label>
@@ -43,7 +40,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Género</label>
-                        <select class="form-control" name="Usuario_Genero">
+                        <select class="form-control" name="Usuario_Genero" required>
                             <option value="">Seleccionar</option>
                             <option value="Masculino">Masculino</option>
                             <option value="Femenino">Femenino</option>
@@ -55,25 +52,25 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Fecha de Nacimiento</label>
-                        <input class="form-control" type="date" name="Usuario_FechaNacimiento">
+                        <input class="form-control" type="date" name="Usuario_FechaNacimiento" required>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Ciudad</label>
-                        <input class="form-control" name="Usuario_Ciudad">
+                        <input class="form-control" name="Usuario_Ciudad" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Estado</label>
-                        <input class="form-control" name="Usuario_Estado">
+                        <input class="form-control" name="Usuario_Estado" required>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-12">
                         <label class="form-label">Dirección</label>
-                        <textarea class="form-control" name="Usuario_Direccion" rows="3"></textarea>
+                        <textarea class="form-control" name="Usuario_Direccion" rows="3" required></textarea>
                     </div>
                 </div>
 
@@ -82,13 +79,45 @@
                 </button>
             </form>
         </div>
-
-
-        <!-- PIE DE PÁGINA -->
-        <br> <?php include '../Layout/footer.php'; ?>
+        <br> <?php include '../Layout/footer.php'; ?> <!-- Footer -->
     </div>
 
-    <!-- Fin del Código -->
-    <!-- Scritps Adicionales -->
+    <!-- Script de API Clientes -->
+    <script>
+        document.getElementById('clienteForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const data = {
+                Usuario_Nombre: form.Usuario_Nombre.value,
+                Usuario_Apellidos: form.Usuario_Apellidos.value,
+                Usuario_Email: form.Usuario_Email.value,
+                Usuario_Telefono: form.Usuario_Telefono.value,
+                Usuario_Contraseña: form.Usuario_Contraseña.value,
+                Usuario_Genero: form.Usuario_Genero.value,
+                Usuario_FechaNacimiento: form.Usuario_FechaNacimiento.value,
+                Usuario_Ciudad: form.Usuario_Ciudad.value,
+                Usuario_Estado: form.Usuario_Estado.value,
+                Usuario_Direccion: form.Usuario_Direccion.value
+            };
+
+            const response = await fetch('../PHP/API/clientes.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert('Cliente registrado correctamente.');
+                window.location.href = './clientesView.php';
+            } else {
+                alert('Error: ' + (result.error || 'No se pudo registrar el cliente.'));
+            }
+        });
+    </script>
 </body>
 </html>

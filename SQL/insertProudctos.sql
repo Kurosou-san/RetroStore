@@ -23,3 +23,7 @@ INSERT INTO Productos (Producto_Codigo, Producto_Nombre, Producto_Descripcion, P
 ('VID010', 'FIFA 23 - Xbox', 'Videojuego Xbox: FIFA 23', 850.00, 100, '../Media/Store/Videojuegos_Xbox_Fifa23.png', 'Disponible', 88, 'Videojuegos'),
 ('VID011', 'GTAV - Xbox', 'Videojuego Xbox: Grand Theft Auto V', 1020.00, 100, '../Media/Store/Videojuegos_Xbox_GTAV.png', 'Disponible', 96, 'Videojuegos'),
 ('VID012', 'Red Dead Redemption 2 - Xbox', 'Videojuego Xbox: Red Dead Redemption 2', 1190.00, 100, '../Media/Store/Videojuegos_Xbox_RedDeadRedeption2.png', 'Disponible', 98, 'Videojuegos');
+
+
+INSERT INTO Premios (Premio_Nombre, Premio_Descripcion, Premio_PuntosNecesarios, Premio_Disponible, Premio_Imagen) VALUES
+(../Media/Premios/)

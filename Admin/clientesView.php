@@ -7,14 +7,13 @@
 </head>
 <body>
     <div class="wrapper">
-        <?php include '../Layout/navbar.php'; ?>
-
+        <?php include '../Layout/navbar.php'; ?> <!-- Navbar -->
         <div class="container mt-4">
             <h2>Administrar Clientes</h2><hr>
             <a href="./clientesCreate.php" class="btn btn-success mb-3">
                 <i class="fas fa-plus"></i> Registrar Cliente
             </a>
-
+            <!-- Formulario para buscar y seleccionar el número de elementos por página -->
             <form method="GET" class="mb-3">
                 <div class="row">
                     <div class="col-md-6">
@@ -82,7 +81,7 @@
         <br> <?php include '../Layout/footer.php'; ?>
     </div>
 
-    <!-- Script para consumir la API -->
+    <!-- Script de API Clientes -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const params = new URLSearchParams(window.location.search);
