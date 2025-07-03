@@ -8,7 +8,7 @@
 
     $id = (int)$_GET['id'];
 
-    $stmt = $conexion->prepare("SELECT Usuario_Nombre, Usuario_Apellidos, Usuario_Email, Usuario_Telefono, Usuario_Contraseña,
+    $stmt = $conexion->prepare("SELECT Usuario_Nombre, Usuario_Apellidos, Usuario_Email, Usuario_Telefono,
      Usuario_Genero, Usuario_FechaNacimiento, Usuario_Ciudad, Usuario_Estado, Usuario_Direccion, 
      Usuario_Puntos, Usuario_Tarjeta FROM Usuarios WHERE UsuarioID = ?");
     $stmt->bind_param("i", $id);
@@ -77,13 +77,6 @@
 
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label class="form-label">Contraseña</label>
-                        <input class="form-control" type="password" name="Usuario_Contraseña" placeholder="Solo si desea cambiarla">
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-md-6">
                         <label class="form-label">Ciudad</label>
                         <input class="form-control" name="Usuario_Ciudad" required value="<?php echo htmlspecialchars($cliente['Usuario_Ciudad']); ?>">
                     </div>
@@ -103,7 +96,7 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Puntos acumulados</label>
-                        <input class="form-control" name="Usuario_Puntos" type="number" value="<?php echo $cliente['Usuario_Puntos']; ?>">
+                        <input class="form-control" name="Usuario_Puntos" type="number" value="<?php echo $cliente['Usuario_Puntos']; ?>" readonly>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Tarjeta</label>
@@ -118,7 +111,7 @@
         </div>
         <br> <?php include '../Layout/footer.php'; ?> <!-- Footer -->
     </div>
-    <!-- Script de API Beneficios -->
+    <!-- Script de API Clientes -->
     <script>
         document.getElementById('formEditarCliente').addEventListener('submit', async function (e) {
             e.preventDefault();
@@ -126,18 +119,16 @@
             const form = e.target;
 
             const data = {
-                UsuarioID: parseInt(form.UsuarioID.value),
+                UsuarioID: parseInt(form.UsuarioID.value), // No cambiarle nada al ID
                 Usuario_Nombre: form.Usuario_Nombre.value,
                 Usuario_Apellidos: form.Usuario_Apellidos.value,
                 Usuario_Email: form.Usuario_Email.value,
                 Usuario_Telefono: form.Usuario_Telefono.value,
-                Usuario_Contraseña: form.Usuario_Contraseña.value,
                 Usuario_Genero: form.Usuario_Genero.value,
                 Usuario_FechaNacimiento: form.Usuario_FechaNacimiento.value,
                 Usuario_Ciudad: form.Usuario_Ciudad.value,
                 Usuario_Estado: form.Usuario_Estado.value,
                 Usuario_Direccion: form.Usuario_Direccion.value,
-                Usuario_Puntos: form.Usuario_Puntos.value
             };
 
             const response = await fetch('../PHP/API/clientes.php', {

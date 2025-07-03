@@ -58,7 +58,7 @@
         $descripcion  = $input['Premio_Descripcion'] ?? null;
         $puntos       = (int)$input['Premio_PuntosNecesarios'];
         $disponible   = (int)$input['Premio_Disponible'];
-        $imagenRuta   = $input['Premio_Imagen'] ?? null; // Opcionalmente guarda solo el nombre o base64
+        $imagenRuta   = $input['Premio_Imagen'] ?? null; 
 
         // Insertar en la BD
         $stmt = $conexion->prepare("

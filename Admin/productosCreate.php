@@ -6,14 +6,11 @@
     <?php include '../Layout/documentCDN.html'; ?>
 </head>
 <body>
-    <!-- Inicio del Código -->
     <div class="wrapper">
-        <!-- BARRA DE NAVEGACIÓN -->
-        <?php include '../Layout/navbar.php'; ?>
-
+        <?php include '../Layout/navbar.php'; ?> <!-- Navbar -->
         <div class="container mt-4">
             <h2>Crear Producto</h2><hr>
-            <form action="../PHP/productoCreate.php" method="POST" enctype="multipart/form-data">
+            <form id="productoForm" enctype="multipart/form-data">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Código del Producto</label>
@@ -64,24 +61,19 @@
                         <img id="preview" src="#" alt="Vista previa" style="max-width: 200px; display: none; margin-top: 10px;">
                     </div>
                 </div>
+
                 <button class="btn btn-secondary" type="submit">
-                    <i class="fas fa-save"></i> Guardar Cambios
+                    <i class="fas fa-save"></i> Guardar Producto
                 </button>
             </form>
         </div>
-
-
-        <!-- PIE DE PÁGINA -->
-        <br> <?php include '../Layout/footer.php'; ?>
+        <br> <?php include '../Layout/footer.php'; ?> <!-- Footer-->
     </div>
-
-    <!-- Fin del Código -->
-    <!-- Scritps Adicionales -->
+    <!-- Script de API Productos -->
     <script>
         function mostrarVistaPrevia(event) {
             const input = event.target;
             const preview = document.getElementById('preview');
-
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -91,6 +83,65 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
+
+        document.getElementById('productoForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const archivo = form.Producto_Imagen.files[0];
+            let imagenURL = null;
+
+            // Subir imagen si existe
+            if (archivo) {
+                const formDataImg = new FormData();
+                formDataImg.append('Producto_Imagen', archivo);
+                formDataImg.append('Producto_Nombre', form.Producto_Nombre.value);
+
+                const imgResponse = await fetch('../PHP/API/productosImagen.php', {
+                    method: 'POST',
+                    body: formDataImg
+                });
+
+                const imgResult = await imgResponse.json();
+
+                if (!imgResponse.ok) {
+                    alert('Error al subir imagen: ' + (imgResult.error || ''));
+                    return;
+                }
+
+                imagenURL = imgResult.ruta;
+            }
+
+            // Enviar datos para crear producto
+            const data = {
+                Producto_Codigo: form.Producto_Codigo.value,
+                Producto_Nombre: form.Producto_Nombre.value,
+                Producto_Descripcion: form.Producto_Descripcion.value,
+                Producto_Categoria: form.Producto_Categoria.value,
+                Producto_Puntaje: form.Producto_Puntaje.value,
+                Producto_Precio: form.Producto_Precio.value,
+                Producto_Stock: form.Producto_Stock.value,
+                Producto_Estado: form.Producto_Estado.value,
+                Producto_Imagen: imagenURL 
+            };
+
+            const response = await fetch('../PHP/API/productos.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert('Producto creado correctamente.');
+                window.location.href = './productosView.php';
+            } else {
+                alert('Error: ' + (result.error || 'No se pudo crear el producto.'));
+            }
+        });
     </script>
 </body>
 </html>

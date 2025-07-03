@@ -73,13 +73,13 @@
                     <button class="btn btn-danger" type="submit">
                         <i class="fas fa-trash-alt"></i> Eliminar Premio
                     </button>
-                    <a href="./beneficiosView.php" class="btn btn-secondary ms-2">Cancelar</a>
+                    <a href="./premiosView.php" class="btn btn-secondary ms-2">Cancelar</a>
                 </div>
             </form>
         </div>
         <br> <?php include '../Layout/footer.php'; ?> <!-- Footer -->
     </div>
-    <!-- Script de API Beneficios -->
+    <!-- Script de API Premios -->
     <script>
         function mostrarVistaPrevia(event) {
             const input = event.target;

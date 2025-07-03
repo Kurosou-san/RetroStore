@@ -6,17 +6,13 @@
     <?php include '../Layout/documentCDN.html'; ?>
 </head>
 <body>
-    <!-- Inicio del Código -->
     <div class="wrapper">
-        <!-- BARRA DE NAVEGACIÓN -->
-        <?php include '../Layout/navbar.php'; ?>
-
+        <?php include '../Layout/navbar.php'; ?> <!-- Navbar -->
         <div class="container mt-4">
             <h2>Administrar Productos</h2><hr>
             <a href="./productosCreate.php" class="btn btn-success mb-3">
-                <i class="fas fa-plus"></i> Nuevo Producto
+                <i class="fas fa-plus"></i> Registrar Producto
             </a>
-
             <!-- Formulario para buscar y seleccionar el número de elementos por página -->
             <form method="GET" class="mb-3">
                 <div class="row">
@@ -38,27 +34,6 @@
                 </div>
             </form>
 
-            <?php
-                include '../PHP/conexion_BD.php';
-
-                $items_per_page = isset($_GET['items_per_page']) ? (int)$_GET['items_per_page'] : 10;
-                $search = isset($_GET['search']) ? mysqli_real_escape_string($conexion, $_GET['search']) : '';
-
-                $query_count = "SELECT COUNT(*) FROM Productos WHERE Producto_Nombre LIKE '%$search%'";
-                $result_count = mysqli_query($conexion, $query_count);
-                $total_items = mysqli_fetch_row($result_count)[0];
-                $total_pages = ceil($total_items / $items_per_page);
-
-                $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-                $offset = ($current_page - 1) * $items_per_page;
-
-                $query = "SELECT ProductoID, Producto_Nombre, Producto_Codigo, Producto_Descripcion, Producto_Precio, Producto_Stock, Producto_Estado 
-                        FROM Productos 
-                        WHERE Producto_Nombre LIKE '%$search%' 
-                        LIMIT $items_per_page OFFSET $offset";
-                $result = mysqli_query($conexion, $query);
-            ?>
-
             <table class="table table-bordered table-striped">
                 <thead class="table-dark text-center">
                     <tr>
@@ -73,51 +48,113 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-                        <tr>
-                            <td class="text-center"><?php echo $row['ProductoID']; ?></td>
-                            <td><?php echo $row['Producto_Nombre']; ?></td>
-                            <td><?php echo $row['Producto_Codigo']; ?></td>
-                            <td><?php echo $row['Producto_Descripcion']; ?></td>
-                            <td class="text-end">$<?php echo number_format($row['Producto_Precio'], 2); ?></td>
-                            <td class="text-center"><?php echo $row['Producto_Stock']; ?></td>
-                            <td class="text-center"><?php echo $row['Producto_Estado']; ?></td>
-                            <td class="text-center">
-                                <a href="./productosEdit.php?id=<?php echo $row['ProductoID']; ?>" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="./productosDelete.php?id=<?php echo $row['ProductoID']; ?>" class="btn btn-sm btn-danger">
-                                    <i class="fas fa-trash-alt"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    <?php } ?>
+                    <!-- Contenido dinámico por JavaScript -->
                 </tbody>
             </table>
-
+            
             <!-- Paginación -->
             <div class="d-flex justify-content-between">
                 <div>
-                    <p>Mostrando <?php echo $current_page; ?> de <?php echo $total_pages; ?> páginas</p>
+                    <p id="pagination-info"></p>
                 </div>
                 <div>
                     <ul class="pagination">
+                        <?php
+                            $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+                            $items_per_page = isset($_GET['items_per_page']) ? (int)$_GET['items_per_page'] : 10;
+                            $search = isset($_GET['search']) ? $_GET['search'] : '';
+                            $prev_page = max(1, $current_page - 1);
+                            $next_page = $current_page + 1;
+                        ?>
                         <li class="page-item <?php echo $current_page <= 1 ? 'disabled' : ''; ?>">
-                            <a class="page-link" href="?page=<?php echo $current_page - 1; ?>&search=<?php echo $search; ?>&items_per_page=<?php echo $items_per_page; ?>">Anterior</a>
+                            <a class="page-link" href="?page=<?php echo $prev_page; ?>&search=<?php echo $search; ?>&items_per_page=<?php echo $items_per_page; ?>">Anterior</a>
                         </li>
-                        <li class="page-item <?php echo $current_page >= $total_pages ? 'disabled' : ''; ?>">
-                            <a class="page-link" href="?page=<?php echo $current_page + 1; ?>&search=<?php echo $search; ?>&items_per_page=<?php echo $items_per_page; ?>">Siguiente</a>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?php echo $next_page; ?>&search=<?php echo $search; ?>&items_per_page=<?php echo $items_per_page; ?>">Siguiente</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
-
-        <!-- PIE DE PÁGINA -->
-        <br> <?php include '../Layout/footer.php'; ?>
+        <br> <?php include '../Layout/footer.php'; ?> <!-- Footer -->
     </div>
+    <!-- Script de API Productos -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const params = new URLSearchParams(window.location.search);
+            const search = params.get('search') || '';
+            const itemsPerPage = parseInt(params.get('items_per_page')) || 10;
+            const currentPage = parseInt(params.get('page')) || 1;
+            const offset = (currentPage - 1) * itemsPerPage;
 
-    <!-- Fin del Código -->
-    <!-- Scritps Adicionales -->
+            // Cargar datos paginados
+            fetch(`../PHP/API/productos.php?search=${encodeURIComponent(search)}&limit=${itemsPerPage}&offset=${offset}`)
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.querySelector('tbody');
+                    tbody.innerHTML = '';
+
+                    if (data.length === 0) {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td colspan="6" class="text-center">No se encontraron resultados</td>`;
+                        tbody.appendChild(tr);
+                    } else {
+                        data.forEach(row => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td class="text-center">${row.ProductoID}</td>
+                                <td>${row.Producto_Nombre}</td>
+                                <td>${row.Producto_Codigo}</td>
+                                <td>${row.Producto_Descripcion}</td>
+                                <td>${row.Producto_Precio}</td>
+                                <td>${row.Producto_Stock}</td>
+                                <td class="text-center">${row.Producto_Estado === 'Disponible' ? 'Disponible' : 'Agotado'}</td>
+                                <td class="text-center">
+                                    <a href="./productosEdit.php?id=${row.ProductoID}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="./productosDelete.php?id=${row.ProductoID}" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.error('Error al obtener datos de la API:', err);
+                });
+
+            // Obtener cantidad total de registros
+            fetch(`../PHP/API/productos.php?search=${encodeURIComponent(search)}&count=true`)
+                .then(res => res.json())
+                .then(data => {
+                    const totalRecords = data.total;
+                    const totalPages = Math.max(1, Math.ceil(totalRecords / itemsPerPage));
+                    const paginationText = document.getElementById('pagination-info');
+                    paginationText.textContent = `Mostrando página ${currentPage} de ${totalPages}`;
+
+                    // Actualizar botones de paginación
+                    const prevBtn = document.querySelector('.pagination .page-item:first-child');
+                    const nextBtn = document.querySelector('.pagination .page-item:last-child');
+
+                    if (currentPage <= 1) {
+                        prevBtn.classList.add('disabled');
+                    } else {
+                        prevBtn.classList.remove('disabled');
+                    }
+
+                    if (currentPage >= totalPages) {
+                        nextBtn.classList.add('disabled');
+                    } else {
+                        nextBtn.classList.remove('disabled');
+                    }
+                })
+                .catch(err => {
+                    console.error('Error al obtener total de registros:', err);
+                });
+        });
+    </script>
 </body>
 </html>

@@ -100,7 +100,7 @@
                 Premio_Descripcion: form.Premio_Descripcion.value,
                 Premio_PuntosNecesarios: parseInt(form.Premio_PuntosNecesarios.value),
                 Premio_Disponible: parseInt(form.Premio_Disponible.value),
-                Premio_Imagen: imagenURL // Aquí se envía la ruta relativa
+                Premio_Imagen: imagenURL 
             };
 
             const response = await fetch('../PHP/API/premios.php', {
