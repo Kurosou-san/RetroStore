@@ -10,6 +10,7 @@
   <!-- Iconos FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="./CSS/styleIndex.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body>
@@ -32,15 +33,35 @@
         </div>
       </div>
 
-      <div class="d-grid">
-        <button type="submit" name="btnLogin" class="btn btn-primary">Iniciar Sesión</button>
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="recordarDatos">
+        <label class="form-check-label" for="recordarDatos">
+          Recordar mis datos
+        </label>
       </div>
 
+      <div class="d-grid">
+        <button type="button" class="btn btn-primary" onclick="validarFormulario()">Iniciar Sesión</button>
+      </div>
     </form>
   </div>
+
+  <!-- Modal de Voz -->
+  <div class="modal fade" id="voiceModal" tabindex="-1" aria-labelledby="voiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-center p-4">
+        <h5 class="modal-title mb-3" id="voiceModalLabel" style="color: black;">Verificación por Voz</h5>
+        <i class="fa-solid fa-microphone fa-3x mb-3 text-primary" style="cursor:pointer" id="startMic"></i>
+        <p id="voiceStatus" style="color: rgb(126, 126, 122);">Di la palabra: <strong>"Ingresar"</strong></p>
+        <p class="text-muted" id="resultMessage"></p>
+      </div>
+    </div>
+  </div>
+
 
   <!-- Otros scripts -->
   <script src="./JS/recordarDatos.js"></script>
   <script src="./JS/showPassword.js"></script>
+  <script src="./JS/comandoVoz.js"></script>
 </body>
 </html>

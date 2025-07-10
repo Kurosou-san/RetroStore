@@ -1,60 +1,42 @@
+<?php include '../PHP/session.php'; ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Retro Store - Registro</title>
-  <link rel="icon" type="image/png" href="../Media/Retro.png">
-  <!-- Bootstrap 5.3 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Iconos FontAwesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="../CSS/styleRegistro.css">
+    <title>Retro Store - Home</title>
+    <?php include '../Layout/documentCDN.html'; ?>
 </head>
-
 <body>
-  <div class="register-container">
-    <form action="../PHP/registrarUsuario.php" method="post">
-      <h2 class="text-center mb-4">Registro</h2>
+    <!-- Inicio del Código -->
+    <div class="wrapper">
+        <!-- BARRA DE NAVEGACIÓN -->
+        <?php include '../Layout/navbar.php'; ?>
 
-      <div class="mb-3">
-        <label for="Usuario_Nombre" class="form-label">Nombre:</label>
-        <input type="text" class="form-control" id="Usuario_Nombre" name="Usuario_Nombre" placeholder="Ingresa tu nombre" required>
-      </div>
+        <div class="container mt-4">
+            <h2>Bienvenido a Retro Store</h2>
+            <p>
+                En Retro Store, somos una tienda online especializada en consolas y videojuegos. 
+                Contamos con una cuidada selección de productos para Nintendo Switch, Xbox y otras plataformas actuales y retro. 
+                Nuestro compromiso es ofrecerte una experiencia de compra confiable, con artículos originales y soporte de calidad.
+            </p>
 
-      <div class="mb-3">
-        <label for="Usuario_Apellidos" class="form-label">Apellidos:</label>
-        <input type="text" class="form-control" id="Usuario_Apellidos" name="Usuario_Apellidos" placeholder="Ingresa tus apellidos" required>
-      </div>
-
-      <div class="mb-3">
-        <label for="Usuario_Telefono" class="form-label">Número Telefónico:</label>
-        <input type="text" class="form-control" id="Usuario_Telefono" name="Usuario_Telefono" placeholder="Ingresa tu número" required>
-      </div>
-
-      <div class="mb-3">
-        <label for="Usuario_Email" class="form-label">Correo Electrónico:</label>
-        <input type="email" class="form-control" id="Usuario_Email" name="Usuario_Email" placeholder="Ingresa tu correo electrónico" required>
-      </div>
-
-      <div class="mb-3">
-        <label for="Usuario_Contraseña" class="form-label">Contraseña:</label>
-        <div class="position-relative">
-          <input type="password" class="form-control" id="Usuario_Contraseña" name="Usuario_Contraseña" placeholder="Ingresa tu contraseña" required autocomplete="new-password">
-          <button type="button" id="showPasswordBtn" class="password-toggle" onclick="mostrarContrasena()" aria-label="Mostrar u ocultar contraseña">
-            <i class="fa fa-eye" id="eyeIcon"></i>
-          </button>
+            <!-- Sección de ventajas -->
+            <div class="mt-4">
+                <h3>¿Por qué elegir Retro Store?</h3>
+                <ul>
+                    <li>Amplio catálogo de consolas y videojuegos para Nintendo Switch y Xbox.</li>
+                    <li>Precios accesibles y promociones exclusivas.</li>
+                    <li>Envío rápido y seguro a todo el país.</li>
+                    <li>Atención al cliente profesional y personalizada.</li>
+                </ul>                
+            </div>
         </div>
-      </div>
 
-      <div class="d-grid">
-        <button type="submit" class="btn btn-primary">Registrarse</button>
-      </div>
+        <!-- PIE DE PÁGINA -->
+        
+        <br> <?php include '../Layout/footer.php'; ?>
+    </div>
 
-    </form>
-  </div>
-
-  <!-- Otros scripts -->
-  <script src="../JS/showPassword.js"></script>
+    <!-- Fin del Código -->
+    <!-- Scritps Adicionales -->
 </body>
 </html>
